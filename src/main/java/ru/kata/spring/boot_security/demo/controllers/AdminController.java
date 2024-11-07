@@ -27,28 +27,28 @@ public class AdminController {
     public String adminPage(Model model, Principal principal) {
         List<User> users = userService.findAll();
         model.addAttribute("users", users);
-        model.addAttribute("newUser", new User()); // Для формы создания нового пользователя
-        model.addAttribute("roles", roleService.findAll()); // Для выбора ролей
-        model.addAttribute("user", userService.findByEmail(principal.getName())); // Для выбора пользователя
+        model.addAttribute("newUser", new User());
+        model.addAttribute("roles", roleService.findAll());
+        model.addAttribute("user", userService.findByEmail(principal.getName()));
         return "admin"; // Возвращаем имя шаблона
     }
 
     @PostMapping("/new")
     public String createUser(@ModelAttribute("newUser") User newUser) {
         userService.saveUser(newUser);
-        return "redirect:/admin"; // Перенаправление на страницу администрирования
+        return "redirect:/admin";
     }
 
     @PostMapping("/edit/{id}")
     public String editUser(@PathVariable Long id, @ModelAttribute User user) {
-        user.setId(id); // Устанавливаем ID редактируемого пользователя
+        user.setId(id);
         userService.saveUser(user);
-        return "redirect:/admin"; // Перенаправление на страницу администрирования
+        return "redirect:/admin";
     }
 
     @PostMapping("/delete/{id}")
     public String deleteUser(@PathVariable Long id) {
         userService.deleteById(id);
-        return "redirect:/admin"; // Перенаправление на страницу администрирования
+        return "redirect:/admin";
     }
 }

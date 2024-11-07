@@ -45,19 +45,6 @@ public class UserServiceImpl implements UserService {
         userRepository.save(user);
     }
 
-//    @Override
-//    @Transactional
-//    public void update(Long id ,User updatedUser) {
-//        User userToBeUpdated = userRepository.findById(id).orElse(null);
-//
-//        userToBeUpdated.setUsername(updatedUser.getUsername());
-//        if(!updatedUser.getPassword().equals(userToBeUpdated.getPassword())) {
-//            userToBeUpdated.setPassword(passwordEncoder.encode(updatedUser.getPassword()));
-//        }
-//
-//        userRepository.save(userToBeUpdated);
-//    }
-
     @Override
     @Transactional
     public void deleteById(Long id) {
