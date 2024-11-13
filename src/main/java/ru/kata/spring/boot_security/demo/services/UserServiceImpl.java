@@ -8,6 +8,7 @@ import ru.kata.spring.boot_security.demo.models.User;
 import ru.kata.spring.boot_security.demo.repositories.UserRepository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -21,33 +22,33 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    @Transactional(readOnly = true)
-    public List<User> findAll() {
+    public List<User> getAll() {
         return userRepository.findAll();
     }
 
-    @Override
-    @Transactional(readOnly = true)
-    public User findByEmail(String username) {
-        return userRepository.findByEmail(username);
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public User findById(Long id) {
-        return userRepository.findById(id).orElse(null);
-    }
-
-    @Override
     @Transactional
-    public void saveUser(User user) {
+    @Override
+    public User add(User user) {
         user.setPassword(passwordEncoder.encode(user.getPassword()));
-        userRepository.save(user);
+        return userRepository.save(user);
+    }
+
+    @Transactional
+    @Override
+    public void update(User updatedUser) {
+        updatedUser.setPassword(passwordEncoder.encode(updatedUser.getPassword()));
+
+        userRepository.save(updatedUser);
+    }
+
+    @Transactional
+    @Override
+    public void delete(Long id) {
+        userRepository.deleteById(id);
     }
 
     @Override
-    @Transactional
-    public void deleteById(Long id) {
-        userRepository.deleteById(id);
+    public Optional<User> findByEmail(String email) {
+        return userRepository.findByEmail(email);
     }
 }

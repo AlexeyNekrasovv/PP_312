@@ -6,6 +6,7 @@ import ru.kata.spring.boot_security.demo.models.Role;
 import ru.kata.spring.boot_security.demo.repositories.RoleRepository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class RoleServiceImpl implements RoleService {
@@ -17,27 +18,27 @@ public class RoleServiceImpl implements RoleService {
     }
 
     @Override
+    public Role save(Role role) {
+        return roleRepository.save(role);
+    }
+
+    @Override
     public List<Role> findAll() {
         return roleRepository.findAll();
     }
 
     @Override
-    public Role findByName(String name) {
-        return roleRepository.findByName(name);
-    }
-
-    @Override
-    public Role findById(Long id) {
-        return roleRepository.findById(id).orElse(null);
-    }
-
-    @Override
-    public void saveRole(Role role) {
-        roleRepository.save(role);
+    public Optional<Role> findById(Long id) {
+        return roleRepository.findById(id);
     }
 
     @Override
     public void deleteById(Long id) {
         roleRepository.deleteById(id);
+    }
+
+    @Override
+    public Optional<Role> findByName(String name) {
+        return roleRepository.findByName(name);
     }
 }
