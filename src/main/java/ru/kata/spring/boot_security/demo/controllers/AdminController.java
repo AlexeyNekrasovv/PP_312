@@ -12,7 +12,7 @@ import ru.kata.spring.boot_security.demo.services.UserService;
 import java.security.Principal;
 import java.util.List;
 
-@Controller
+@RestController
 @RequestMapping("/admin")
 public class AdminController {
     private final RoleService roleService;
@@ -25,9 +25,10 @@ public class AdminController {
     }
 
     @GetMapping("/users")
-    public String getUsersList(Principal principal, Model model) {
+    public void getUsersList(Principal principal, Model model) {
         addAttributesToMainPage(model, principal);
-        return "admin/control-panel";
+        //return "admin/control-panel";
+//        return "redirect:/admin/control-panel";
     }
 
     private void addAttributesToMainPage(Model model, Principal principal) {

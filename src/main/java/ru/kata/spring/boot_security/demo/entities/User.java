@@ -39,13 +39,13 @@ public class User implements UserDetails {
             joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"),
             inverseJoinColumns = @JoinColumn(name = "role_id", referencedColumnName = "id")
     )
-    private List<Role> roles;
+    private Set<Role> roles = new HashSet<>();
 
 
     public User() {
     }
 
-    public User(String email, String name, Integer age, String password, List<Role> roles) {
+    public User(String email, String name, Integer age, String password, Set<Role> roles) {
         this.email = email;
         this.name = name;
         this.age = age;
@@ -55,8 +55,8 @@ public class User implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        List<Role> roles = this.getRoles();
-        List<SimpleGrantedAuthority> authorities = new ArrayList<>();
+        Set<Role> roles = this.getRoles();
+        Set<SimpleGrantedAuthority> authorities = new HashSet<>();
         for (Role role : roles) {
             authorities.add(new SimpleGrantedAuthority(role.getName()));
         }
@@ -129,12 +129,13 @@ public class User implements UserDetails {
         this.password = password;
     }
 
-    public List<Role> getRoles() {
+    public Set<Role> getRoles() {
         return roles;
     }
 
-    public void setRoles(List<Role> roles) {
-        this.roles = roles;
+    public void setRoles(Set<Role> roles) {
+        this.roles = roles; // != null ? roles : new HashSet<>();
+
     }
 
     @Override
