@@ -1,7 +1,7 @@
 package ru.kata.spring.boot_security.demo.services;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Lazy;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -12,44 +12,73 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
+@Transactional(readOnly = true)
 public class UserServiceImpl implements UserService {
-    private final UserRepository userRepository;
+
     private final PasswordEncoder passwordEncoder;
+    private final UserRepository userDao;
+    private final UserRepository userRepository;
 
     @Autowired
-    public UserServiceImpl(UserRepository userRepository, @Lazy PasswordEncoder passwordEncoder) {
-        this.userRepository = userRepository;
+    public UserServiceImpl(UserRepository userDao, PasswordEncoder passwordEncoder, UserRepository userRepository) {
+        this.userDao = userDao;
         this.passwordEncoder = passwordEncoder;
+        this.userRepository = userRepository;
     }
 
     @Override
-    public List<User> getAll() {
-        return userRepository.findAll();
+    public User findUserById(Long userId) {
+        Optional<User> userFromDb = userDao.findById(userId);
+        return userFromDb.orElse(new User());
     }
 
+    @Override
+    public List<User> findAllUsers() {
+        return userDao.findAll();
+    }
+
+    @Override
     @Transactional
-    @Override
-    public User add(User user) {
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
-        return userRepository.save(user);
+    public void saveUser(User user) {
+        user.setPassword(new BCryptPasswordEncoder().encode(user.getPassword()));
+        user.setRoles(user.getRoles());
+        userDao.save(user);
     }
 
+    @Override
     @Transactional
-    @Override
-    public void update(User updatedUser) {
-        updatedUser.setPassword(passwordEncoder.encode(updatedUser.getPassword()));
-
-        userRepository.save(updatedUser);
+    public boolean updateUser(Long id, User updatedUser) {
+        Optional<User> userFromDb = userDao.findById(id);
+        if (userFromDb.isPresent()) {
+            User existingUser = userFromDb.get();
+            // Обновляем поля пользователя
+            existingUser.setFirstName(updatedUser.getFirstName());
+            existingUser.setLastName(updatedUser.getLastName());
+            existingUser.setEmail(updatedUser.getEmail());
+            existingUser.setAge(updatedUser.getAge());
+            existingUser.setRoles(updatedUser.getRoles());
+            // Обновляем пароль, если он был изменен
+            if (updatedUser.getPassword() != null && !updatedUser.getPassword().isEmpty()) {
+                existingUser.setPassword(passwordEncoder.encode(updatedUser.getPassword()));
+            }
+            userDao.save(existingUser);
+            return true;
+        }
+        return false;
     }
 
+    @Override
     @Transactional
-    @Override
-    public void delete(Long id) {
-        userRepository.deleteById(id);
+    public boolean deleteUser(Long userId) {
+        if (userDao.findById(userId).isPresent()) {
+            userDao.deleteById(userId);
+            return true;
+        }
+        return false;
     }
 
     @Override
-    public Optional<User> findByEmail(String email) {
-        return userRepository.findByEmail(email);
+    public User findByEmail(String email) {
+        return userDao.findByEmail(email);
     }
 }

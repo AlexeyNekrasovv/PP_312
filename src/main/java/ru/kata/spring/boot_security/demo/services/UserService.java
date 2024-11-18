@@ -5,14 +5,29 @@ import ru.kata.spring.boot_security.demo.entities.User;
 import java.util.List;
 import java.util.Optional;
 
+//public interface UserService {
+//    List<User> getAll();
+//
+//    User add(User user);
+//
+//    void update(User updatedUser);
+//
+//    void delete(Long id);
+//
+//    Optional<User> findByEmail(String email);
+//}
+
 public interface UserService {
-    List<User> getAll();
 
-    User add(User user);
+    public List<User> findAllUsers();
 
-    void update(User updatedUser);
+    public User findUserById(Long userId);
 
-    void delete(Long id);
+    public void saveUser(User user);
 
-    Optional<User> findByEmail(String email);
+    public boolean updateUser(Long id, User user);
+
+    public boolean deleteUser(Long userId);
+
+    User findByEmail(String email);
 }
