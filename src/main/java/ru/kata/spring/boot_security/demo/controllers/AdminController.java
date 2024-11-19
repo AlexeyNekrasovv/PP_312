@@ -25,37 +25,31 @@ public class AdminController {
         this.roleDao = roleDao;
     }
 
-    // Получение информации о текущем пользователе
     @GetMapping("/currentUser")
     public ResponseEntity<User> getCurrentUser(Principal principal) {
         User currentUser = userService.findByEmail(principal.getName());
         return new ResponseEntity<>(currentUser, HttpStatus.OK);
     }
 
-    //Получение всех пользователей
     @GetMapping("/users")
     public ResponseEntity<List<User>> getAllUsers() {
         return new ResponseEntity<>(userService.findAllUsers(), HttpStatus.OK);
     }
 
-    // Получение информации о пользователе по ID
     @GetMapping("/users/{id}")
     public ResponseEntity<User> getUserById(@PathVariable Long id) {
         User user = userService.findUserById(id);
         return new ResponseEntity<>(user, HttpStatus.OK);
     }
 
-    // Добавление нового пользователя
     @PostMapping("/users")
     public ResponseEntity<User> addUser(@RequestBody User user) {
         userService.saveUser(user);
         return new ResponseEntity<>(user, HttpStatus.CREATED);
     }
 
-    // Редактирование
     @PutMapping("/users/{id}")
     public ResponseEntity<User> updateUser(@PathVariable("id") Long id, @RequestBody User user) {
-        // Проверка ID
         if (user.getId() == null || !user.getId().equals(id)) {
             return ResponseEntity.badRequest().body(null);
         }
@@ -63,14 +57,12 @@ public class AdminController {
         return ResponseEntity.ok(user);
     }
 
-    // Удаление пользователя
     @DeleteMapping("/users/{id}")
     public ResponseEntity<HttpStatus> deleteUser(@PathVariable("id") Long id) {
         userService.deleteUser(id);
         return ResponseEntity.ok(HttpStatus.OK);
     }
 
-    //Загрузка ролей
     @GetMapping("users/roles")
     public ResponseEntity<List<Role>> getAllRoles() {
         return new ResponseEntity<>(roleDao.findAll(), HttpStatus.OK);

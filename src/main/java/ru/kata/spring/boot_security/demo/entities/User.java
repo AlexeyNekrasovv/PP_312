@@ -1,7 +1,6 @@
 package ru.kata.spring.boot_security.demo.entities;
 
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
@@ -9,7 +8,8 @@ import javax.validation.constraints.Email;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Size;
-import java.util.*;
+import java.util.Collection;
+import java.util.Set;
 
 @Entity
 @Table(name = "users")
@@ -20,25 +20,32 @@ public class User implements UserDetails {
     @Column(name = "id")
     private Long id;
 
+    @NotEmpty(message = "Name should not be empty")
+    @Size(min = 2, max = 30, message = "Name should be between 2 and 30 characters")
     @Column(name = "first_name")
     private String firstName;
 
+    @NotEmpty(message = "Name should not be empty")
+    @Size(min = 2, max = 30, message = "Name should be between 2 and 30 characters")
     @Column(name = "last_name")
     private String lastName;
 
-    @Column(name = "age")
-    private int age;
+    @Column(name = "age", nullable = false)
+    @Min(value = 0, message = "Age should be greater than 0")
+    private Integer age;
 
-    @Column(name = "email")
+    @Email(message = "Email should be valid")
+    @NotEmpty(message = "Email should not be empty")
+    @Column(name = "email", nullable = false, unique = true)
     private String email;
 
-    @Column(name = "password")
+    @Column(name = "password", nullable = false)
     private String password;
 
     @ManyToMany(fetch = FetchType.EAGER)
-    List<Role> roles;
+    private Set<Role> roles;
 
-    public User(String firstName, String lastName, int age, String email, String password, List<Role> roles) {
+    public User(String firstName, String lastName, int age, String email, String password, Set<Role> roles) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.age = age;
@@ -137,11 +144,24 @@ public class User implements UserDetails {
         return true;
     }
 
-    public List<Role> getRoles() {
+    public Set<Role> getRoles() {
         return roles;
     }
 
-    public void setRoles(List<Role> roles) {
+    public void setRoles(Set<Role> roles) {
         this.roles = roles;
+    }
+
+    @Override
+    public String toString() {
+        return "User{" +
+                "id=" + id +
+                ", firstName='" + firstName + '\'' +
+                ", lastName='" + lastName + '\'' +
+                ", age=" + age +
+                ", email='" + email + '\'' +
+                ", password='" + password + '\'' +
+                ", roles=" + roles +
+                '}';
     }
 }
