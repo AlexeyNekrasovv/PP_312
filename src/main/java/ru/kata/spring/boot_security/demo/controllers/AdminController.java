@@ -9,6 +9,7 @@ import ru.kata.spring.boot_security.demo.entities.Role;
 import ru.kata.spring.boot_security.demo.repositories.RoleRepository;
 import ru.kata.spring.boot_security.demo.services.UserService;
 
+import javax.validation.Valid;
 import java.security.Principal;
 import java.util.List;
 
@@ -43,13 +44,13 @@ public class AdminController {
     }
 
     @PostMapping("/users")
-    public ResponseEntity<User> addUser(@RequestBody User user) {
+    public ResponseEntity<User> addUser(@RequestBody @Valid User user) {
         userService.saveUser(user);
         return new ResponseEntity<>(user, HttpStatus.CREATED);
     }
 
     @PutMapping("/users/{id}")
-    public ResponseEntity<User> updateUser(@PathVariable("id") Long id, @RequestBody User user) {
+    public ResponseEntity<User> updateUser(@PathVariable("id") Long id, @RequestBody @Valid User user) {
         if (user.getId() == null || !user.getId().equals(id)) {
             return ResponseEntity.badRequest().body(null);
         }
